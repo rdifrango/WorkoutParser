@@ -1,0 +1,1 @@
+"""Workout Parser - consolidates workout Excel files into a single spreadsheet."""
