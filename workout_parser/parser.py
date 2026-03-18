@@ -101,6 +101,25 @@ def parse_workbook(path: Path) -> list[Exercise]:
     return exercises
 
 
+def validate_file(filename: str) -> str | None:
+    """Validate that a filename matches the expected workout format.
+
+    Returns an error message string, or None if valid.
+    """
+    match = FILENAME_PATTERN.match(filename)
+    if not match:
+        return (
+            f"'{filename}' doesn't match expected format "
+            "(e.g., 'December-2024-4-Day-Full-Gym-Routine.xlsx')"
+        )
+    month_name = match.group(1)
+    try:
+        datetime.strptime(month_name, "%B")
+    except ValueError:
+        return f"'{filename}' has an invalid month name: '{month_name}'"
+    return None
+
+
 def parse_folder(folder: Path) -> pd.DataFrame:
     """Parse all workout Excel files in a folder and return a consolidated DataFrame."""
     all_exercises: list[Exercise] = []
