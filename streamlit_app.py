@@ -9,6 +9,18 @@ from workout_parser.parser import parse_files, validate_file
 st.title("Workout Parser")
 st.write("Upload one or more workout Excel files to parse and consolidate them.")
 
+with st.expander("Expected file format"):
+    st.markdown(
+        """
+**Filename** must follow the pattern: `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
+
+**Workbook structure:**
+- Sheets named "Week 1", "Week 2", etc.
+- Exercise data is read from the **Client Notes** section
+- Sets/reps/weight in the format `{sets}x{reps}x{weight}` (e.g., `3x10x135`)
+"""
+    )
+
 uploaded_files = st.file_uploader(
     "Choose .xlsx files", type="xlsx", accept_multiple_files=True
 )

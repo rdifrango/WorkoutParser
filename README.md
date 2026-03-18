@@ -76,9 +76,11 @@ uv run pytest -v
 ### Expected Input Format
 
 Each Excel file should follow the Chris Gates Fitness template:
+- Filename in the format `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
 - Sheets named "Week 1", "Week 2", etc.
 - Daily exercises listed with "Day N" headers
-- Exercise entries in `sets x reps x weight` format (e.g., `3x10x135`)
+- Exercise data is read from the **Client Notes** section
+- Sets/reps/weight in the format `{sets}x{reps}x{weight}` (e.g., `3x10x135`)
 
 ## Dependencies
 
