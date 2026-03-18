@@ -1,33 +1,40 @@
 # WorkoutParser
 
-A Java tool that parses monthly workout Excel files from [Chris Gates Fitness](https://www.chrisgatesfitness.com/) and consolidates all exercise data into a single output spreadsheet for easier tracking and analysis.
+A Python tool that parses monthly workout Excel files from [Chris Gates Fitness](https://www.chrisgatesfitness.com/) and consolidates all exercise data into a single output spreadsheet for easier tracking and analysis.
 
 ## Prerequisites
 
-- Java 21+
-- Maven 3.x
+- Python 3.13+
+- [uv](https://docs.astral.sh/uv/)
 
 ## Project Structure
 
 ```
 WorkoutParser/
-├── src/main/java/org/difrango/
-│   └── WorkoutParser.java       # Main application
-├── workouts/                    # Input Excel files (not tracked in git)
-├── pom.xml                      # Maven build configuration
-└── .mvn/jvm.config              # JVM args for Error Prone
+├── python/
+│   ├── workout_parser/
+│   │   ├── __init__.py
+│   │   ├── __main__.py      # python -m support
+│   │   ├── cli.py            # CLI entry point
+│   │   └── parser.py         # Core parsing logic
+│   ├── tests/
+│   │   └── test_parser.py    # 14 tests
+│   ├── pyproject.toml         # Project config & dependencies
+│   └── uv.lock
+└── workouts/                  # Input Excel files (not tracked in git)
 ```
 
-## Build
+## Setup
 
 ```bash
-mvn clean compile
+cd python
+uv sync
 ```
 
 ## Usage
 
 ```bash
-mvn exec:java -Dexec.mainClass="org.difrango.WorkoutParser"
+uv run python -m workout_parser.cli
 ```
 
 ### Options
@@ -35,11 +42,18 @@ mvn exec:java -Dexec.mainClass="org.difrango.WorkoutParser"
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--folder`, `-f` | Path to folder containing workout `.xlsx` files | `workouts` |
+| `--output`, `-o` | Output Excel file path | `output.xlsx` |
 
 Example with a custom folder:
 
 ```bash
-mvn exec:java -Dexec.mainClass="org.difrango.WorkoutParser" -Dexec.args="--folder /path/to/files"
+uv run python -m workout_parser.cli -f /path/to/files -o results.xlsx
+```
+
+## Testing
+
+```bash
+uv run pytest -v
 ```
 
 ## How It Works
@@ -47,7 +61,8 @@ mvn exec:java -Dexec.mainClass="org.difrango.WorkoutParser" -Dexec.args="--folde
 1. Scans the input folder for `.xlsx` files
 2. Parses the month and year from each filename (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
 3. Reads each "Week N" sheet, extracting daily exercises with sets, reps, and weight
-4. Writes all consolidated data to `output.xlsx`
+4. Tracks per-day dates so exercises under each "Day N" header get the correct date
+5. Writes all consolidated data to an output Excel file
 
 ### Expected Input Format
 
@@ -58,6 +73,5 @@ Each Excel file should follow the Chris Gates Fitness template:
 
 ## Dependencies
 
-- [Apache POI](https://poi.apache.org/) — Excel file reading/writing
-- [JCommander](https://jcommander.org/) — CLI argument parsing
-- [Error Prone](https://errorprone.info/) — Static analysis at compile time
+- [openpyxl](https://openpyxl.readthedocs.io/) — Excel file reading
+- [pandas](https://pandas.pydata.org/) — Data consolidation and Excel output
