@@ -11,23 +11,21 @@ A Python tool that parses monthly workout Excel files from [Chris Gates Fitness]
 
 ```
 WorkoutParser/
-├── python/
-│   ├── workout_parser/
-│   │   ├── __init__.py
-│   │   ├── __main__.py      # python -m support
-│   │   ├── cli.py            # CLI entry point
-│   │   └── parser.py         # Core parsing logic
-│   ├── tests/
-│   │   └── test_parser.py    # 14 tests
-│   ├── pyproject.toml         # Project config & dependencies
-│   └── uv.lock
+├── workout_parser/
+│   ├── __init__.py
+│   ├── __main__.py          # python -m support
+│   ├── cli.py                # CLI entry point
+│   └── parser.py             # Core parsing logic
+├── tests/
+│   └── test_parser.py        # 14 tests
+├── pyproject.toml             # Project config & dependencies
+├── uv.lock
 └── workouts/                  # Input Excel files (not tracked in git)
 ```
 
 ## Setup
 
 ```bash
-cd python
 uv sync
 ```
 
