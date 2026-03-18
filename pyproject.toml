@@ -12,6 +12,9 @@ dependencies = [
 [project.scripts]
 workout-parser = "workout_parser.cli:main"
 
+[project.optional-dependencies]
+web = ["streamlit>=1.30"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",

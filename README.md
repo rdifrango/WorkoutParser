@@ -18,7 +18,9 @@ WorkoutParser/
 │   └── parser.py             # Core parsing logic
 ├── tests/
 │   └── test_parser.py        # 14 tests
+├── streamlit_app.py           # Streamlit web app
 ├── pyproject.toml             # Project config & dependencies
+├── requirements.txt           # For Streamlit Community Cloud
 ├── uv.lock
 └── workouts/                  # Input Excel files (not tracked in git)
 ```
@@ -48,6 +50,15 @@ Example with a custom folder:
 uv run python -m workout_parser.cli -f /path/to/files -o results.xlsx
 ```
 
+### Web App
+
+Upload workout files through a browser instead of using the CLI:
+
+```bash
+uv sync --extra web
+uv run streamlit run streamlit_app.py
+```
+
 ## Testing
 
 ```bash
@@ -73,3 +84,4 @@ Each Excel file should follow the Chris Gates Fitness template:
 
 - [openpyxl](https://openpyxl.readthedocs.io/) — Excel file reading
 - [pandas](https://pandas.pydata.org/) — Data consolidation and Excel output
+- [streamlit](https://streamlit.io/) — Web app frontend (optional, install with `uv sync --extra web`)

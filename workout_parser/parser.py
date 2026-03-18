@@ -1,9 +1,11 @@
 """Core parsing logic for workout Excel files."""
 
 import re
+import tempfile
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from typing import BinaryIO
 
 import pandas as pd
 from openpyxl import load_workbook
@@ -104,6 +106,41 @@ def parse_folder(folder: Path) -> pd.DataFrame:
     all_exercises: list[Exercise] = []
     for path in sorted(folder.glob("*.xlsx")):
         all_exercises.extend(parse_workbook(path))
+
+    if not all_exercises:
+        return pd.DataFrame(columns=["Date", "Order", "Name", "Sets", "Reps", "Weight"])
+
+    df = pd.DataFrame(
+        [
+            {
+                "Date": e.date,
+                "Order": e.order,
+                "Name": e.name,
+                "Sets": e.sets,
+                "Reps": e.reps,
+                "Weight": e.weight,
+            }
+            for e in all_exercises
+        ]
+    )
+    return df.sort_values("Date").reset_index(drop=True)
+
+
+def parse_files(files: list[BinaryIO]) -> pd.DataFrame:
+    """Parse uploaded file objects and return a consolidated DataFrame."""
+    all_exercises: list[Exercise] = []
+    for f in files:
+        with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+            tmp.write(f.read())
+            tmp_path = Path(tmp.name)
+        # Use the original filename for month/year parsing
+        original_name = getattr(f, "name", tmp_path.name)
+        tmp_renamed = tmp_path.parent / original_name
+        tmp_path.rename(tmp_renamed)
+        try:
+            all_exercises.extend(parse_workbook(tmp_renamed))
+        finally:
+            tmp_renamed.unlink(missing_ok=True)
 
     if not all_exercises:
         return pd.DataFrame(columns=["Date", "Order", "Name", "Sets", "Reps", "Weight"])
