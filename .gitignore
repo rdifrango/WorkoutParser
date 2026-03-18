@@ -44,3 +44,4 @@ build/
 
 ## Excel
 *.xlsx
+.idea
