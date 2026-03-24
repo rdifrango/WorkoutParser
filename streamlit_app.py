@@ -7,12 +7,12 @@ import streamlit as st
 from workout_parser.parser import parse_files, validate_file
 
 st.title("Workout Parser")
-st.write("Upload one or more workout Excel files to parse and consolidate them.")
+st.write("Upload one or more workout spreadsheet files (.xlsx or .numbers) to parse and consolidate them.")
 
 with st.expander("Expected file format"):
     st.markdown(
         """
-**Filename** must follow the pattern: `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
+**Filename** must follow the pattern: `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx` or `.numbers`)
 
 **Workbook structure:**
 - Sheets named "Week 1", "Week 2", etc.
@@ -22,7 +22,7 @@ with st.expander("Expected file format"):
     )
 
 uploaded_files = st.file_uploader(
-    "Choose .xlsx files", type="xlsx", accept_multiple_files=True
+    "Choose .xlsx or .numbers files", type=["xlsx", "numbers"], accept_multiple_files=True
 )
 
 if uploaded_files and st.button("Parse"):

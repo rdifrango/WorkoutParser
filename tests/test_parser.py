@@ -9,6 +9,7 @@ from openpyxl import Workbook
 from workout_parser.parser import (
     EXERCISE_PATTERN,
     Exercise,
+    _normalize_values,
     first_monday,
     parse_folder,
     parse_month_year,
@@ -60,6 +61,47 @@ class TestExercisePattern:
 
     def test_no_match(self):
         assert EXERCISE_PATTERN.match("not an exercise") is None
+
+
+class TestNormalizeValues:
+    def test_standard_order(self):
+        # {sets}x{reps}x{weight} — already correct
+        assert _normalize_values(3, 10, 135, prescribed_sets=3, prescribed_reps=(8, 10)) == (3, 10, 135)
+
+    def test_weight_first(self):
+        # {weight}x{reps}x{sets} e.g., 45x8x3 with prescribed "3 x 6-8"
+        assert _normalize_values(45, 8, 3, prescribed_sets=3, prescribed_reps=(6, 8)) == (3, 8, 45)
+
+    def test_weight_first_swapped_sets_reps(self):
+        # {weight}x{sets}x{reps} e.g., 20x3x10 with prescribed "3 x 8-10"
+        assert _normalize_values(20, 3, 10, prescribed_sets=3, prescribed_reps=(8, 10)) == (3, 10, 20)
+
+    def test_reps_below_range(self):
+        # Reps can be below the prescribed range (user went lower)
+        # e.g., 50x5x3 with prescribed "3 x 6-8" — 5 is below range but <= 8
+        assert _normalize_values(50, 5, 3, prescribed_sets=3, prescribed_reps=(6, 8)) == (3, 5, 50)
+
+    def test_two_numbers_with_prescribed(self):
+        # bodyweight: 3x10
+        assert _normalize_values(3, 10, None, prescribed_sets=3) == (3, 10, 0)
+
+    def test_two_numbers_reversed_with_prescribed(self):
+        # bodyweight reversed: 30x3 (plank)
+        assert _normalize_values(30, 3, None, prescribed_sets=3) == (3, 30, 0)
+
+    def test_fallback_no_prescribed(self):
+        # Without prescribed info, falls back to sort heuristic
+        assert _normalize_values(45, 8, 3) == (3, 8, 45)
+
+    def test_fallback_two_numbers_no_prescribed(self):
+        assert _normalize_values(30, 3, None) == (3, 30, 0)
+
+    def test_prescribed_sets_only_no_reps(self):
+        # Has prescribed sets but no rep range — falls back to smaller=reps
+        assert _normalize_values(45, 8, 3, prescribed_sets=3) == (3, 8, 45)
+
+    def test_equal_values(self):
+        assert _normalize_values(5, 5, 5, prescribed_sets=5, prescribed_reps=(5, 5)) == (5, 5, 5)
 
 
 def _create_test_workbook(path: Path) -> None:

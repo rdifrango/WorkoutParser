@@ -5,6 +5,7 @@ description = "Parses workout Excel files from Chris Gates Fitness and consolida
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "numbers-parser>=4.10",
     "openpyxl>=3.1",
     "pandas>=2.2",
 ]

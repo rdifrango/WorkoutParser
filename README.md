@@ -1,6 +1,6 @@
 # WorkoutParser
 
-A Python tool that parses monthly workout Excel files from [Chris Gates Fitness](https://www.chrisgatesfitness.com/) and consolidates all exercise data into a single output spreadsheet for easier tracking and analysis.
+A Python tool that parses monthly workout spreadsheet files (Excel and Apple Numbers) from [Chris Gates Fitness](https://www.chrisgatesfitness.com/) and consolidates all exercise data into a single output spreadsheet for easier tracking and analysis.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ uv run python -m workout_parser.cli
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--folder`, `-f` | Path to folder containing workout `.xlsx` files | `workouts` |
+| `--folder`, `-f` | Path to folder containing workout `.xlsx` / `.numbers` files | `workouts` |
 | `--output`, `-o` | Output Excel file path | `output.xlsx` |
 
 Example with a custom folder:
@@ -67,16 +67,16 @@ uv run pytest -v
 
 ## How It Works
 
-1. Scans the input folder for `.xlsx` files
-2. Parses the month and year from each filename (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
+1. Scans the input folder for `.xlsx` and `.numbers` files
+2. Parses the month and year from each filename (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx` or `.numbers`)
 3. Reads each "Week N" sheet, extracting daily exercises with sets, reps, and weight
 4. Tracks per-day dates so exercises under each "Day N" header get the correct date
 5. Writes all consolidated data to an output Excel file
 
 ### Expected Input Format
 
-Each Excel file should follow the Chris Gates Fitness template:
-- Filename in the format `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx`)
+Each spreadsheet file should follow the Chris Gates Fitness template:
+- Filename in the format `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx` or `.numbers`)
 - Sheets named "Week 1", "Week 2", etc.
 - Daily exercises listed with "Day N" headers
 - Exercise data is read from the **Client Notes** section
@@ -84,6 +84,7 @@ Each Excel file should follow the Chris Gates Fitness template:
 
 ## Dependencies
 
+- [numbers-parser](https://github.com/masaccio/numbers-parser) — Apple Numbers file reading
 - [openpyxl](https://openpyxl.readthedocs.io/) — Excel file reading
 - [pandas](https://pandas.pydata.org/) — Data consolidation and Excel output
 - [streamlit](https://streamlit.io/) — Web app frontend (optional, install with `uv sync --extra web`)
