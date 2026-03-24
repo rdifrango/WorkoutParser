@@ -1050,10 +1050,6 @@ dependencies = [
     { name = "numbers-parser" },
     { name = "openpyxl" },
     { name = "pandas" },
-]
-
-[package.optional-dependencies]
-web = [
     { name = "streamlit" },
 ]
 
@@ -1068,9 +1064,8 @@ requires-dist = [
     { name = "numbers-parser", specifier = ">=4.10" },
     { name = "openpyxl", specifier = ">=3.1" },
     { name = "pandas", specifier = ">=2.2" },
-    { name = "streamlit", marker = "extra == 'web'", specifier = ">=1.30" },
+    { name = "streamlit", specifier = ">=1.30" },
 ]
-provides-extras = ["web"]
 
 [package.metadata.requires-dev]
 dev = [

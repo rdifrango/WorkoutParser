@@ -57,7 +57,7 @@ The app is live at **[gates-workout-parser.streamlit.app](https://gates-workout-
 To run locally:
 
 ```bash
-uv sync --extra web
+uv sync
 uv run streamlit run streamlit_app.py
 ```
 
@@ -91,4 +91,4 @@ Each spreadsheet file should follow the Chris Gates Fitness template:
 - [numbers-parser](https://github.com/masaccio/numbers-parser) — Apple Numbers file reading
 - [openpyxl](https://openpyxl.readthedocs.io/) — Excel file reading
 - [pandas](https://pandas.pydata.org/) — Data consolidation and Excel output
-- [streamlit](https://streamlit.io/) — Web app frontend (optional, install with `uv sync --extra web`)
+- [streamlit](https://streamlit.io/) — Web app frontend
