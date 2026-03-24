@@ -300,6 +300,7 @@ def parse_files(files: list[BinaryIO]) -> pd.DataFrame:
 
 
 PAREN_SUFFIX = re.compile(r"\s*\([^)]*\)\s*$")
+ANGLE_OR_SUFFIX = re.compile(r"\s*<\s*or\s*>.*$")
 
 
 def normalize_names(df: pd.DataFrame) -> pd.DataFrame:
@@ -309,6 +310,8 @@ def normalize_names(df: pd.DataFrame) -> pd.DataFrame:
 
     # Strip trailing parenthetical aliases, e.g., "Dumbbell Romanian Deadlift (RDL)"
     df["Name"] = df["Name"].str.replace(PAREN_SUFFIX, "", regex=True)
+    # Strip "< or > ..." alternatives, e.g., "Barbell Bench Press < or > Machine Chest Press"
+    df["Name"] = df["Name"].str.replace(ANGLE_OR_SUFFIX, "", regex=True)
 
     # Build a mapping for names that differ only by a trailing 's'.
     # Keep the more frequent form as canonical.

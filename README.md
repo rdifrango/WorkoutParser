@@ -83,8 +83,19 @@ Each spreadsheet file should follow the Chris Gates Fitness template:
 - Filename in the format `Month-Year-...` (e.g., `December-2024-4-Day-Full-Gym-Routine.xlsx` or `.numbers`)
 - Sheets named "Week 1", "Week 2", etc.
 - Daily exercises listed with "Day N" headers
-- Exercise data is read from the **Client Notes** section
+- Exercise data is read from the **Client Notes** column
 - Sets/reps/weight in the format `{sets}x{reps}x{weight}` (e.g., `3x10x135`)
+
+### Smart Parsing
+
+The parser handles several common data entry variations:
+
+**Sets/reps/weight in any order** — The prescribed Sets/Reps column (e.g., `3 x 6-8`) is used to identify which numbers are sets, reps, and weight, so `45x8x3`, `3x8x45`, and `45x3x8` all parse correctly.
+
+**Exercise name normalization** — Inconsistent naming is automatically consolidated:
+- Plural variants: "Dead Bug" / "Dead Bugs" → most frequent form
+- Parenthetical alternatives: "Dumbbell Bench Press (or Floor Press)" → "Dumbbell Bench Press"
+- Angle-bracket alternatives: "Barbell Bench Press < or > Machine Chest Press" → "Barbell Bench Press"
 
 ## Dependencies
 
