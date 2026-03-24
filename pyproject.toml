@@ -8,6 +8,7 @@ dependencies = [
     "numbers-parser>=4.10",
     "openpyxl>=3.1",
     "pandas>=2.2",
+    "pandas-stubs~=2.3.3",
     "streamlit>=1.30",
 ]
 

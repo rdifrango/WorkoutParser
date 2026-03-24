@@ -2,6 +2,8 @@
 
 import io
 
+import altair as alt
+import pandas as pd
 import streamlit as st
 
 from workout_parser.parser import parse_files, validate_file
@@ -38,18 +40,47 @@ if uploaded_files and st.button("Parse"):
     else:
         with st.spinner("Parsing..."):
             df = parse_files(uploaded_files)
+        st.session_state["parsed_df"] = df
 
-        if df.empty:
-            st.warning("No exercises found in the uploaded files.")
-        else:
-            st.success(f"Parsed {len(df)} exercises.")
-            st.dataframe(df)
+if "parsed_df" in st.session_state:
+    df = st.session_state["parsed_df"]
 
-            buf = io.BytesIO()
-            df.to_excel(buf, index=False, sheet_name="Monthly Exercises")
-            st.download_button(
-                "Download Excel",
-                data=buf.getvalue(),
-                file_name="parsed_workouts.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    if df.empty:
+        st.warning("No exercises found in the uploaded files.")
+    else:
+        st.success(f"Parsed {len(df)} exercises.")
+        st.dataframe(df)
+
+        buf = io.BytesIO()
+        df.to_excel(buf, index=False, sheet_name="Monthly Exercises")
+        st.download_button(
+            "Download Excel",
+            data=buf.getvalue(),
+            file_name="parsed_workouts.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+        # --- Trend Chart ---
+        st.subheader("Exercise Trends")
+
+        exercises = sorted(df["Name"].unique())
+        selected = st.multiselect("Select exercises", exercises, default=exercises[:1])
+
+        if selected:
+            metric = st.radio("Y-axis", ["Weight", "Reps"], horizontal=True)
+            filtered = df[df["Name"].isin(selected)].copy()
+            filtered["Date"] = pd.to_datetime(filtered["Date"])
+
+            chart = (
+                alt.Chart(filtered)
+                .mark_line(point=True)
+                .encode(
+                    x=alt.X("Date:T", title="Date"),
+                    y=alt.Y(f"{metric}:Q", title=metric),
+                    color=alt.Color("Name:N", title="Exercise"),
+                    tooltip=["Date:T", "Name:N", "Sets:Q", "Reps:Q", "Weight:Q"],
+                )
+                .interactive()
             )
+
+            st.altair_chart(chart, use_container_width=True)
