@@ -258,6 +258,7 @@ def parse_folder(folder: Path) -> pd.DataFrame:
             for e in all_exercises
         ]
     )
+    df = normalize_names(df)
     return df.sort_values("Date").reset_index(drop=True)
 
 
@@ -294,7 +295,47 @@ def parse_files(files: list[BinaryIO]) -> pd.DataFrame:
             for e in all_exercises
         ]
     )
+    df = normalize_names(df)
     return df.sort_values("Date").reset_index(drop=True)
+
+
+PAREN_SUFFIX = re.compile(r"\s*\([^)]*\)\s*$")
+
+
+def normalize_names(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize exercise names to reduce duplicates from inconsistent naming."""
+    if df.empty:
+        return df
+
+    # Strip trailing parenthetical aliases, e.g., "Dumbbell Romanian Deadlift (RDL)"
+    df["Name"] = df["Name"].str.replace(PAREN_SUFFIX, "", regex=True)
+
+    # Build a mapping for names that differ only by a trailing 's'.
+    # Keep the more frequent form as canonical.
+    counts = df["Name"].value_counts()
+    name_map: dict[str, str] = {}
+    seen: set[str] = set()
+
+    for name in counts.index:
+        if name in seen:
+            continue
+        # Check if singular/plural counterpart exists
+        if name.endswith("s"):
+            other = name[:-1]
+        else:
+            other = name + "s"
+
+        if other in counts.index and other not in seen:
+            # Keep whichever has more occurrences
+            canonical = name if counts[name] >= counts[other] else other
+            variant = other if canonical == name else name
+            name_map[variant] = canonical
+            seen.update([name, other])
+
+    if name_map:
+        df["Name"] = df["Name"].replace(name_map)
+
+    return df
 
 
 def write_output(df: pd.DataFrame, output_path: Path) -> None:
