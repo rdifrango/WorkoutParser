@@ -52,12 +52,16 @@ uv run python -m workout_parser.cli -f /path/to/files -o results.xlsx
 
 ### Web App
 
-Upload workout files through a browser instead of using the CLI:
+The app is live at **[gates-workout-parser.streamlit.app](https://gates-workout-parser.streamlit.app/)**.
+
+To run locally:
 
 ```bash
 uv sync --extra web
 uv run streamlit run streamlit_app.py
 ```
+
+Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ## Testing
 
