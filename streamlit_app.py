@@ -81,20 +81,26 @@ if "parsed_df" in st.session_state:
         selected = st.multiselect("Select exercises", exercises, default=exercises[:1])
 
         if selected:
-            metric = st.radio("Y-axis", ["Weight", "Reps"], horizontal=True)
             filtered = df[df["Name"].isin(selected)].copy()
             filtered["Date"] = pd.to_datetime(filtered["Date"])
 
-            chart = (
-                alt.Chart(filtered)
-                .mark_line(point=True)
-                .encode(
-                    x=alt.X("Date:T", title="Date"),
-                    y=alt.Y(f"{metric}:Q", title=metric),
-                    color=alt.Color("Name:N", title="Exercise"),
-                    tooltip=["Date:T", "Name:N", "Sets:Q", "Reps:Q", "Weight:Q"],
-                )
-                .interactive()
+            base = alt.Chart(filtered).encode(
+                x=alt.X("Date:T", title="Date"),
+                color=alt.Color("Name:N", title="Exercise"),
+                tooltip=["Date:T", "Name:N", "Muscle Group:N", "Sets:Q", "Reps:Q", "Weight:Q"],
             )
 
+            weight_line = base.mark_line(point=True).encode(
+                y=alt.Y("Weight:Q", title="Weight (lbs)"),
+            )
+
+            reps_line = base.mark_line(point=True, strokeDash=[5, 3]).encode(
+                y=alt.Y("Reps:Q", title="Reps"),
+            )
+
+            chart = alt.layer(weight_line, reps_line).resolve_scale(
+                y="independent"
+            ).interactive()
+
+            st.caption("Solid lines = Weight (left axis) | Dashed lines = Reps (right axis)")
             st.altair_chart(chart, use_container_width=True)

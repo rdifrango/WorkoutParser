@@ -23,6 +23,7 @@ class Exercise:
     date: date
     order: str
     name: str
+    muscle_group: str
     sets: int
     reps: int
     weight: int
@@ -103,6 +104,7 @@ def _parse_rows(rows, week_date: date) -> list[Exercise]:
     for row in rows:
         exercise_cell = row[1] if len(row) > 1 else None
         prescribed_cell = row[2] if len(row) > 2 else None
+        muscle_cell = row[4] if len(row) > 4 else None
         set_cell = row[5] if len(row) > 5 else None
 
         if not exercise_cell:
@@ -141,11 +143,13 @@ def _parse_rows(rows, week_date: date) -> list[Exercise]:
                 int(set_match.group(1)), int(set_match.group(2)), raw_c,
                 prescribed_sets, prescribed_reps,
             )
+            muscle_group = str(muscle_cell).strip() if muscle_cell else ""
             exercises.append(
                 Exercise(
                     date=current_date,
                     order=order.strip(),
                     name=name.strip(),
+                    muscle_group=muscle_group,
                     sets=sets,
                     reps=reps,
                     weight=weight,
@@ -243,7 +247,7 @@ def parse_folder(folder: Path) -> pd.DataFrame:
         all_exercises.extend(parse_workbook(path))
 
     if not all_exercises:
-        return pd.DataFrame(columns=["Date", "Order", "Name", "Sets", "Reps", "Weight"])
+        return pd.DataFrame(columns=["Date", "Order", "Name", "Muscle Group", "Sets", "Reps", "Weight"])
 
     df = pd.DataFrame(
         [
@@ -251,6 +255,7 @@ def parse_folder(folder: Path) -> pd.DataFrame:
                 "Date": e.date,
                 "Order": e.order,
                 "Name": e.name,
+                "Muscle Group": e.muscle_group,
                 "Sets": e.sets,
                 "Reps": e.reps,
                 "Weight": e.weight,
@@ -280,7 +285,7 @@ def parse_files(files: list[BinaryIO]) -> pd.DataFrame:
             tmp_renamed.unlink(missing_ok=True)
 
     if not all_exercises:
-        return pd.DataFrame(columns=["Date", "Order", "Name", "Sets", "Reps", "Weight"])
+        return pd.DataFrame(columns=["Date", "Order", "Name", "Muscle Group", "Sets", "Reps", "Weight"])
 
     df = pd.DataFrame(
         [
@@ -288,6 +293,7 @@ def parse_files(files: list[BinaryIO]) -> pd.DataFrame:
                 "Date": e.date,
                 "Order": e.order,
                 "Name": e.name,
+                "Muscle Group": e.muscle_group,
                 "Sets": e.sets,
                 "Reps": e.reps,
                 "Weight": e.weight,

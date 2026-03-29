@@ -116,10 +116,12 @@ def _create_test_workbook(path: Path) -> None:
 
     # Row 2: Exercise
     ws.cell(row=2, column=2, value="A1: Bench Press")
+    ws.cell(row=2, column=5, value="Chest")
     ws.cell(row=2, column=6, value="3x10x135")
 
     # Row 3: Another exercise
     ws.cell(row=3, column=2, value="A2: Incline DB Press")
+    ws.cell(row=3, column=5, value="Chest")
     ws.cell(row=3, column=6, value="3x12x50")
 
     # Week 2 sheet
@@ -127,6 +129,7 @@ def _create_test_workbook(path: Path) -> None:
     ws2.cell(row=1, column=2, value="Day 1")
     ws2.cell(row=1, column=6, value="")
     ws2.cell(row=2, column=2, value="B1: Squat")
+    ws2.cell(row=2, column=5, value="Quads")
     ws2.cell(row=2, column=6, value="4x8x225")
 
     # Non-week sheet (should be skipped)
@@ -148,6 +151,7 @@ class TestParseWorkbook:
             date=date(2024, 5, 7),  # first Monday May 6 + Day 1
             order="A1",
             name="Bench Press",
+            muscle_group="Chest",
             sets=3,
             reps=10,
             weight=135,
@@ -160,6 +164,7 @@ class TestParseWorkbook:
             date=date(2024, 5, 14),
             order="B1",
             name="Squat",
+            muscle_group="Quads",
             sets=4,
             reps=8,
             weight=225,
@@ -178,7 +183,7 @@ class TestParseFolder:
     def test_empty_folder(self, tmp_path):
         df = parse_folder(tmp_path)
         assert len(df) == 0
-        assert list(df.columns) == ["Date", "Order", "Name", "Sets", "Reps", "Weight"]
+        assert list(df.columns) == ["Date", "Order", "Name", "Muscle Group", "Sets", "Reps", "Weight"]
 
     def test_multiple_files(self, tmp_path):
         _create_test_workbook(tmp_path / "May-2024-3-Day-Program.xlsx")
@@ -204,4 +209,4 @@ class TestWriteOutput:
 
         result = pd.read_excel(output)
         assert len(result) == 3
-        assert list(result.columns) == ["Date", "Order", "Name", "Sets", "Reps", "Weight"]
+        assert list(result.columns) == ["Date", "Order", "Name", "Muscle Group", "Sets", "Reps", "Weight"]
